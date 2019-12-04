@@ -2,6 +2,11 @@
 data_local
 data_local/
 
+#####################################
+#R gitignore
+#####################################
+dataton2019.Rproj
+.Rhistory
 ######################################
 #Python gitignore
 ######################################
@@ -135,3 +140,4 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+.Rproj.user
