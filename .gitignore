@@ -1,7 +1,8 @@
 #our local data
 data_local
 data_local/
-
+results
+results/
 #####################################
 #R gitignore
 #####################################
