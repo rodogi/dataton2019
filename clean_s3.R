@@ -39,32 +39,48 @@ s3_sfp2 <- fromJSON(txt = "data_local/s3-servidores-bulk/servidores_publicos_san
 
 setdiff(colnames(s3_edmx), colnames(s3_sfp1)) #nope
 
+## remove large lists from s3_edmx. The info will be lost, but if needed it is still in the JSON file
+s3_edmx <- select(s3_edmx, -c(tipoFalta, tipoSancion, documentos))
+
+
 # combine names into single name
 
-s3_edmx <- MergeName(s3_edmx, 
-                      my_new_column = "nombre_completo,",
-                      servidorPublicoSancionado.nombres, 
-                      servidorPublicoSancionado.primerApellido, 
-                      servidorPublicoSancionado.segundoApellido)
- 
+s3_edmx <- MergeName(s3_edmx, my_new_column = "nombre_completo", servidorPublicoSancionado.nombres, servidorPublicoSancionado.primerApellido, servidorPublicoSancionado.segundoApellido)
 s3_sfp1 <- MergeName(s3_sfp1, my_new_column = "nombre_completo", nombres, primerApellido, segundoApellido)
 s3_sfp2 <- MergeName(s3_sfp2, my_new_column = "nombre_completo", nombres, primerApellido, segundoApellido)
 
+
+
+# make names all caps, remove accents 
+
+s3_edmx <- mutate(.data = s3_edmx, 
+                    nombre_completo = str_to_upper(stringi::stri_trans_general(nombre_completo, "Latin-ASCII")
+                                                   )
+                    )
+
+s3_sfp1 <-   mutate(.data = s3_sfp1, 
+                    nombre_completo = str_to_upper(stringi::stri_trans_general(nombre_completo, "Latin-ASCII")
+                    )
+)
+
+s3_sfp2 <-   mutate(.data = s3_sfp2, 
+                    nombre_completo = str_to_upper(stringi::stri_trans_general(nombre_completo, "Latin-ASCII")
+                    )
+)
+
 #join into single large data frame 
 
-## remove large lists from s3_edmx. The info will be lost, but if needed it is still in the JSON file
-s3_edmx.sansList <- select(s3_edmx, -c(tipoFalta, tipoSancion, documentos))
 
 #For some reason multa.monto raises "can't convert to integer" error when binding.
 #As it is uninformative (montos are all 0 or NA), we convert manually
-s3_edmx.sansList <- mutate(s3_edmx.sansList, multa.monto = as.integer(multa.monto))
+s3_edmx <- mutate(s3_edmx, multa.monto = as.integer(multa.monto))
 s3_sfp1 <- mutate(s3_sfp1, multa.monto = as.integer(multa.monto))
 s3_sfp2 <- mutate(s3_sfp2, multa.monto = as.integer(multa.monto))
 
 s3_df <- 
 bind_rows(list(sfp1 = s3_sfp1, 
           sfp2 = s3_sfp2, 
-          edmx = s3_edmx.sansList),
+          edmx = s3_edmx),
           .id = "sistema") 
 
 #write out
