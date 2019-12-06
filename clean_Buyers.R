@@ -42,4 +42,4 @@ my_buyers <- mutate(.data = my_buyers,
 
 # writeout
 
-write_delim(x = my_buyers, path = "results/my_buyers", delim = "\t", col_names = TRUE)
+write_delim(x = my_buyers, path = "results/my_buyers.txt", delim = "\t", col_names = TRUE)
