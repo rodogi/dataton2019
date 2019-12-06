@@ -73,8 +73,8 @@ s3_sfp2 <-   mutate(.data = s3_sfp2,
 )
 
 s3_part <-   mutate(.data = s3_part, 
-                    nombre_completo = str_to_upper(stringi::stri_trans_general(nombre_completo, "Latin-ASCII")
-                    )
+                    nombre_completo = str_to_upper(stringi::stri_trans_general(nombre_completo, "Latin-ASCII")),
+                    nombreRazonSocial = str_to_upper(stringi::stri_trans_general(nombreRazonSocial, "Latin-ASCII"))
 )
 #join into single large data frame 
 
